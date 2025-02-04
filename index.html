@@ -1,422 +1,105 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+    <title>Random Image Grid</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub Repository Images</title>
     <style>
         body {
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: #ffffff;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            overflow-x: hidden;
-            transition: background-color 0.3s ease;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+            overflow: hidden;
+            transition: background-color 0.5s ease;
         }
-
-        h1 {
-            font-size: 2rem;
-            color: white;
-            margin-top: 20px;
-            transition: transform 0.3s ease;
-        }
-
-        .gallery {
+        .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(30, 1fr); /* Adjust for more rows */
             gap: 10px;
-            width: 90%;
-            max-width: 1200px;
-            height: 80vh;
-            overflow-y: scroll;
-            padding-right: 10px;
-            transition: transform 0.3s ease;
+            width: 90vw;
+            height: 180vh; /* Increased height for more rows */
+            overflow: hidden;
+            animation: scroll 40s linear infinite;
         }
-
-        .gallery::-webkit-scrollbar {
-            display: none;
-        }
-
-        .gallery img {
-            width: 100%;
-            border-radius: 10px;
-            transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
-        }
-
-        .gallery img:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
-        }
-
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .grid img {
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
+            object-fit: cover;
+            transition: transform 0.3s ease;
         }
-
-        .overlay img {
-            max-width: 90%;
-            max-height: 90%;
-            border-radius: 10px;
+        .grid img:hover {
+            transform: scale(1.1);
         }
-
-        .overlay .nav {
+        @keyframes scroll {
+            0% { transform: translateY(100%); }
+            100% { transform: translateY(-50%); } /* Scroll by 50% of the grid's height */
+        }
+        .reset-button {
             position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 2rem;
-            color: white;
-            background: rgba(0, 0, 0, 0.6);
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            z-index: 1001;
-        }
-
-        .overlay .nav.left {
-            left: 10px;
-        }
-
-        .overlay .nav.right {
-            right: 10px;
-        }
-
-        .overlay.active {
-            display: flex;
-        }
-
-        .likes-text {
-            color: white;
-            font-size: 1.5rem;
-            text-align: center;
-            position: absolute;
-            bottom: 10%;
-            opacity: 0;
-            transition: opacity 1s ease;
-            z-index: 1000;
-        }
-
-        .likes-text.show {
-            opacity: 1;
-        }
-
-        .button-container {
-            margin-top: 20px;
-        }
-
-        .button-container button {
-            font-size: 1rem;
-            padding: 5px;
-            background-color: transparent;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-
-        .button-container button:hover {
-            border: 1px solid #ff6347;
-            background-color: rgba(255, 99, 71, 0.1);
-        }
-
-        .button-container button:active {
-            background-color: #ff6347;
-            color: white;
-        }
-
-        .nav-button {
-            position: fixed;
-            bottom: 10px;
-            font-size: 1.5rem;
-            color: white;
-            background-color: transparent;
-            border: 1px solid transparent;
-            padding: 10px;
-            cursor: pointer;
-            z-index: 1001;
-            visibility: hidden; /* Initially hidden */
-        }
-
-        .nav-button:hover {
-            border: 1px solid #ff6347;
-        }
-
-        .nav-button:active {
-            background-color: #ff6347;
-            color: white;
-        }
-
-        #changeColorBtn {
-            position: fixed;
             top: 10px;
             right: 10px;
-            font-size: 1rem;
+            background-color: transparent;
             color: white;
-            background: transparent;
             border: 2px solid white;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            text-align: center;
-            line-height: 40px;
+            padding: 10px;
+            font-size: 20px;
             cursor: pointer;
-            z-index: 1001;
-            visibility: hidden; /* Initially hidden */
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
-
-        #changeColorBtn:hover {
-            background-color: rgba(255, 255, 255, 0.2);
+        .reset-button:hover {
+            background-color: white;
+            color: #4CAF50;
         }
-
-        #changeColorBtn::after {
-            content: "R";
-            font-size: 1.5rem;
-            visibility: visible;
-            color: white;
-        }
-
-        #changeColorBtn:hover::after {
-            content: "Click to change what you see";
-            font-size: 0.5rem;
-            color: #ff6347;
-        }
-
-        /* Styling for the "R" button to make it visible only on hover */
-        #changeColorBtn:hover {
-            visibility: visible;
-            transform: scale(1.2);
-            box-shadow: 0 0 20px rgba(255, 99, 71, 0.7);
-        }
-
-        /* Adjust the hidden text position */
-        .hidden-text {
-            position: absolute;
-            top: -30px;
-            font-size: 0.5rem;
-            color: white;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        #changeColorBtn:hover .hidden-text {
-            opacity: 1;
-        }
-
-        /* Circle around the R button */
-        #changeColorBtn {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            font-size: 1.5rem;
-            color: white;
-            background-color: transparent;
-            border: 2px solid #ff6347;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            text-align: center;
-            line-height: 50px;
-            cursor: pointer;
-            z-index: 1001;
-            transition: all 0.3s ease;
-        }
-
-        #changeColorBtn:hover {
-            background-color: rgba(255, 99, 71, 0.1);
-            box-shadow: 0 0 20px rgba(255, 99, 71, 0.5);
-        }
-
-        #changeColorBtn span {
-            visibility: hidden;
-        }
-
-        #changeColorBtn:hover span {
-            visibility: visible;
-        }
-
-        /* Media Queries to make the "R" button responsive */
-        @media screen and (max-width: 768px) {
-            #changeColorBtn {
-                width: 35px;
-                height: 35px;
-                font-size: 1.2rem;
-            }
-
-            #changeColorBtn::after {
-                font-size: 1rem;
-            }
-        }
-
-        @media screen and (max-width: 480px) {
-            #changeColorBtn {
-                width: 30px;
-                height: 30px;
-                font-size: 1rem;
-            }
-
-            #changeColorBtn::after {
-                font-size: 0.8rem;
-            }
-        }
-
     </style>
 </head>
 <body>
+    <div class="grid" id="imageGrid">
+        <!-- Random images will be inserted here -->
+    </div>
+    <button class="reset-button" onclick="changeBackgroundColor()">R</button>
+    <script>
+        const imageGrid = document.getElementById('imageGrid');
+        const apiUrl = 'https://api.github.com/repos/photostic-source/images/contents/';
+        let scrollSpeed = 15;
+        let scrollTimeout;
 
-<h1 id="header">Gallery</h1>
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                const validExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
+                const filteredImages = data.filter(item => 
+                    validExtensions.some(ext => item.name.endsWith(ext))
+                );
 
-<!-- Button Container -->
-<div class="button-container">
-    <button id="changeColorBtn">
-        <span class="hidden-text">Click to change what you see</span>
-    </button>
-</div>
-
-<div class="gallery" id="gallery"></div>
-
-<div class="overlay" id="overlay">
-    <button class="nav left" id="prev">&#8249;</button>
-    <img id="overlayImage" src="" alt="">
-    <button class="nav right" id="next">&#8250;</button>
-    <div class="likes-text" id="likesText"></div>
-</div>
-
-<!-- Navigation buttons -->
-<a href="https://your-link-1.com" class="nav-button left">Previous Repo</a>
-<a href="https://your-link-2.com" class="nav-button right">Next Repo</a>
-
-<script>
-    const gallery = document.getElementById('gallery');
-    const overlay = document.getElementById('overlay');
-    const overlayImage = document.getElementById('overlayImage');
-    const prev = document.getElementById('prev');
-    const next = document.getElementById('next');
-    const likesText = document.getElementById('likesText');
-    const changeColorBtn = document.getElementById('changeColorBtn');
-    const header = document.getElementById('header');
-    const navButtons = document.querySelectorAll('.nav-button');
-
-    let images = [];
-    let currentIndex = 0;
-    let repositories = [
-        'photostic-source/potratit', // First repository
-        'photostic-source/another-repository', // Another repository example
-        'photostic-source/yet-another-repo' // Another repository example
-    ];
-    let currentRepoIndex = 0;
-
-    const getRandomLikes = (imageUrl) => {
-        let likes = sessionStorage.getItem(imageUrl);
-        if (!likes) {
-            likes = Math.floor(Math.random() * (30000 - 70 + 1)) + 70;
-            sessionStorage.setItem(imageUrl, likes);
-        }
-        return likes;
-    };
-
-    const changeBackgroundColor = () => {
-        const colors = ['#ffffff', '#121212', '#000080', '#87CEEB', '#FF6347', '#FF4500', '#2F4F4F'];
-        const randomColor = colors[Math.floor(Math.random() * colors.length)];
-        document.body.style.backgroundColor = randomColor;
-
-        // Change R button color based on the background
-        if (randomColor === '#ffffff') {
-            changeColorBtn.style.color = 'black';
-        } else {
-            changeColorBtn.style.color = 'white';
-        }
-    };
-
-    const fetchImages = async () => {
-        try {
-            const response = await fetch(`https://api.github.com/repos/${repositories[currentRepoIndex]}/contents`);
-            const data = await response.json();
-
-            images = data
-                .filter(item => item.type === 'file' && /\.(png|jpe?g|gif|svg)$/i.test(item.name))
-                .map(item => item.download_url);
-
-            images.forEach((src, index) => {
-                const img = document.createElement('img');
-                img.src = src;
-                img.alt = `Image ${index + 1}`;
-
-                img.addEventListener('click', () => {
-                    overlayImage.src = src;
-                    overlay.classList.add('active');
-                    currentIndex = index;
-                    const likes = getRandomLikes(src);
-                    likesText.textContent = `${likes} people liked this photo`;
-                    likesText.classList.add('show');
+                filteredImages.forEach(item => {
+                    const img = document.createElement('img');
+                    img.src = item.download_url;
+                    img.alt = "Image Thumbnail";
+                    imageGrid.appendChild(img);
                 });
-                gallery.appendChild(img);
-            });
-        } catch (error) {
-            console.error('Error fetching images:', error);
-        }
-    };
+            })
+            .catch(error => console.error('Error fetching images:', error));
 
-    const showImage = (index) => {
-        if (index < 0) {
-            currentIndex = images.length - 1;
-        } else if (index >= images.length) {
-            currentIndex = 0;
-        } else {
-            currentIndex = index;
-        }
-        overlayImage.src = images[currentIndex];
-    };
-
-    prev.addEventListener('click', () => showImage(currentIndex - 1));
-    next.addEventListener('click', () => showImage(currentIndex + 1));
-
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay || e.target === overlayImage) {
-            overlay.classList.remove('active');
-            likesText.classList.remove('show');
-        }
-    });
-
-    changeColorBtn.addEventListener('click', changeBackgroundColor);
-
-    window.addEventListener('scroll', () => {
-        const headerHeight = header.offsetHeight;
-        const scrollPosition = window.scrollY;
-
-        // Show or hide header based on scroll direction
-        if (scrollPosition > headerHeight) {
-            header.style.transform = 'translateY(-100%)';
-        } else {
-            header.style.transform = 'translateY(0)';
+        function changeBackgroundColor() {
+            const colors = ['#000000', '#ffffff', '#ff0000', '#0000ff'];
+            document.body.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
         }
 
-        // Show navigation buttons only when scrolling to the bottom
-        if ((window.innerHeight + scrollPosition) >= document.body.offsetHeight) {
-            navButtons.forEach(button => {
-                button.style.visibility = 'visible';
-            });
-        } else {
-            navButtons.forEach(button => {
-                button.style.visibility = 'hidden';
-            });
-        }
-    });
+        window.addEventListener('wheel', (event) => {
+            clearTimeout(scrollTimeout);
+            scrollSpeed -= event.deltaY / 100;
+            imageGrid.style.animationDuration = `${scrollSpeed}s`;
 
-    fetchImages(); // Initialize gallery
-</script>
-
+            scrollTimeout = setTimeout(() => {
+                scrollSpeed = 20;
+                imageGrid.style.animationDuration = '30s';
+            }, 3000);
+        });
+    </script>
 </body>
 </html>
